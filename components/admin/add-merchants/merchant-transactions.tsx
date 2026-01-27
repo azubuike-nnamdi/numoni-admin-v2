@@ -4,8 +4,8 @@ import { DataTable } from '@/components/ui/data-table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import LoadingSpinner from '@/components/ui/loading-spinner';
-
 import useGetMerchantTransactions from '@/hooks/query/useGetMerchantTransactions';
+import { extractErrorMessage } from '@/lib/helper';
 import { MerchantTransaction } from '@/lib/types';
 import { ChevronLeft, ChevronRight, Download, Info, RefreshCw, Search, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -61,7 +61,7 @@ export default function MerchantTransactions() {
     return (
       <ErrorState
         title="Error Loading Transactions"
-        message={error?.message || "Failed to load transactions. Please try again."}
+        message={extractErrorMessage(error) || "Failed to load transactions. Please try again."}
         onRetry={refetch}
         retryText="Retry"
       />

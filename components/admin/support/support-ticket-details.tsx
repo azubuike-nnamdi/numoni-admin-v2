@@ -37,7 +37,6 @@ export default function SupportTicketDetails({ ticketId }: { ticketId: string })
   const supportTicket = data?.data?.data;
 
 
-
   const hasAttachments = supportTicket?.imagepath && supportTicket.imagepath.length > 0 && supportTicket.imagepath.some((img: Attachment) => img.imagePath);
 
   return (

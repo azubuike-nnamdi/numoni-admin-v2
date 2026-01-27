@@ -15,7 +15,10 @@ export const merchantSchema = z.object({
     .max(10, 'Phone number must be exactly 10 digits')
     .regex(/^\d{10}$/, 'Phone number must contain only digits'),
   businessCategory: z.array(z.string()).min(1, 'At least one business category is required'),
-  rcNumber: z.string().regex(/^RC[A-Z0-9]+$/i, 'RC number must start with "RC" followed by alphanumeric characters'),
+  rcNumber: z.string().optional().refine(
+    (val) => !val || /^RC[A-Z0-9]+$/i.test(val),
+    { message: 'RC number must start with "RC" followed by alphanumeric characters' }
+  ),
   businessType: z.string().min(1, 'Business type is required'),
   headquarterAddress: z.string().min(1, 'Headquarter address is required'),
   country: z.string().optional(),
@@ -25,6 +28,10 @@ export const merchantSchema = z.object({
   businessDescription: z.string()
     .min(10, 'Business description must be at least 10 characters')
     .max(500, 'Business description must not exceed 500 characters'),
+  businessImagePath: z.array(z.string()).optional(),
+  businessOpenHours: z.string().optional(),
+  businessClosingHours: z.string().optional(),
+  cacDocumentPath: z.string().optional(),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
     .max(50, 'Password must not exceed 50 characters')

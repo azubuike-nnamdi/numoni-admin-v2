@@ -2,6 +2,7 @@
 import useGetNotificationList from '@/hooks/query/useGetNotificationList';
 
 import { useMarkNotificationAsRead } from '@/hooks/mutation/useMarkNotificationAsRead';
+import { extractErrorMessage } from '@/lib/helper';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { EmptyState } from '../ui/empty-state';
@@ -135,7 +136,7 @@ export default function Notification() {
   }
 
   if (isError) {
-    return <ErrorState title="Error Loading Notifications" message={error?.message || "Failed to load notifications. Please try again."} onRetry={refetch} retryText="Try Again" />;
+    return <ErrorState title="Error Loading Notifications" message={extractErrorMessage(error) || "Failed to load notifications. Please try again."} onRetry={refetch} retryText="Try Again" />;
   }
 
   //empty state

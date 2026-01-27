@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGeneratePayOnUsToken } from '@/hooks/mutation/useGeneratePayOnUsToken';
 import useGetAllDashboardDetails from '@/hooks/query/useGetAllDashboardDetails';
-import { formatValue } from '@/lib/helper';
+import { extractErrorMessage, formatValue } from '@/lib/helper';
 import { Clock, Gift, Star, Store, Ticket, TrendingUp, Users, Wallet } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { MetricCard } from '../common/metric-card';
@@ -131,7 +131,7 @@ export default function Admin() {
             <MetricCard
               key={index}
               title={metric.title}
-              value={dashboardDetailsError ? 'Error' : metric.value}
+              value={dashboardDetailsError ? extractErrorMessage(dashboardDetailsError) : metric.value}
               // change={metric.change}
               changeType={metric.changeType}
               icon={metric.icon}

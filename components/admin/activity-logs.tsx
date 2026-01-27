@@ -5,7 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { ErrorState } from '@/components/ui/error-state';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import useGetActivityList from '@/hooks/query/useGetActivityList';
-import { mapApiActivityToActivityLog } from '@/lib/helper';
+import { extractErrorMessage, mapApiActivityToActivityLog } from '@/lib/helper';
 import { ChevronLeft, ChevronRight, Download, Info, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { activityLogColumns } from './activity-log-columns';
@@ -55,7 +55,7 @@ export default function ActivityLogs() {
     return <LoadingSpinner message="Loading activity logs..." />;
   }
   if (isError) {
-    return <ErrorState title="Error Loading Activity Logs" message={error?.message || "Failed to load activity logs. Please try again."} onRetry={refetch} retryText="Retry" />;
+    return <ErrorState title="Error Loading Activity Logs" message={extractErrorMessage(error) || "Failed to load activity logs. Please try again."} onRetry={refetch} retryText="Retry" />;
   }
 
   return (

@@ -206,6 +206,87 @@ The application uses **Zustand** for client-side state management with the follo
 -  **Error Handling**: Centralized error handling and user feedback
 -  **Type Safety**: Full TypeScript integration for API responses
 
+## 🔒 CORS Issue Resolution
+
+### Problem
+
+When downloading QR code images from S3 buckets, the browser was blocking the download due to CORS (Cross-Origin Resource Sharing) restrictions. The error occurred because:
+
+1. **S3 Bucket Configuration**: The S3 buckets (`cpip-dev-public.s3.eu-west-1.amazonaws.com`, etc.) don't have CORS headers configured
+2. **Canvas Taint**: When loading external images directly into a canvas element, browsers enforce CORS policies. If the image server doesn't send proper CORS headers, the canvas becomes "tainted" and cannot be exported
+3. **Direct Fetch Failure**: Attempting to fetch images directly from S3 using `fetch()` or `new Image()` fails when CORS headers are missing
+
+### Solution: Image Proxy API Route
+
+We implemented a **server-side proxy** approach that bypasses browser CORS restrictions:
+
+#### 1. Created Image Proxy API Route (`/app/api/images/proxy/route.ts`)
+
+This Next.js API route:
+
+-  **Fetches images server-side**: Server-to-server requests don't have CORS restrictions
+-  **Validates allowed domains**: Only allows requests from whitelisted S3 domains for security
+-  **Returns images with proper headers**: Serves images with CORS headers that allow browser access
+-  **Handles errors gracefully**: Returns appropriate error responses for invalid requests
+
+```typescript
+// Example usage:
+GET /api/images/proxy?url=https://cpip-dev-public.s3.eu-west-1.amazonaws.com/image.png
+```
+
+#### 2. Updated Image Loading Function (`lib/helper.ts`)
+
+Modified `loadImageWithCors()` to:
+
+-  **Detect S3 URLs**: Automatically identifies S3 bucket URLs
+-  **Route through proxy**: S3 URLs are automatically proxied through `/api/images/proxy`
+-  **Handle local assets**: Local paths (like `/assets/icons/...`) are loaded directly without proxying
+-  **Maintain fallback**: Still attempts direct loading for non-S3 external URLs
+
+#### How It Works
+
+```
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│   Browser   │────────▶│  Next.js    │────────▶│  S3 Bucket  │
+│  (Client)   │         │  API Proxy  │         │  (Server)   │
+└─────────────┘         └──────────────┘         └─────────────┘
+     │                          │                         │
+     │ 1. Request image         │ 2. Fetch from S3        │
+     │    via proxy             │    (no CORS issue)     │
+     │                          │                         │
+     │◀─────────────────────────│ 3. Return with         │
+     │                          │    CORS headers        │
+     │                          │                         │
+     │ 4. Load into canvas      │                         │
+     │    (same-origin,         │                         │
+     │     no CORS issue)       │                         │
+```
+
+#### Benefits
+
+✅ **No AWS Configuration Required**: Works without modifying S3 bucket CORS settings  
+✅ **Secure**: Domain whitelisting prevents unauthorized image proxying  
+✅ **Transparent**: Client code doesn't need to know about the proxy  
+✅ **Performant**: Images are cached with proper cache headers  
+✅ **Backward Compatible**: Local assets and other external URLs still work normally
+
+#### Allowed Domains
+
+The proxy currently allows images from:
+
+-  `cpip-dev-public.s3.eu-west-1.amazonaws.com`
+-  `numoniimages.s3.amazonaws.com`
+-  `numoni-prod-uploads.s3.eu-west-1.amazonaws.com`
+-  `s3.amazonaws.com` (general S3 bucket pattern)
+
+To add more domains, update the `allowedDomains` array in `/app/api/images/proxy/route.ts`.
+
+#### Related Files
+
+-  `/app/api/images/proxy/route.ts` - Image proxy API route
+-  `/lib/helper.ts` - `loadImageWithCors()` function that uses the proxy
+-  `/lib/helper.ts` - `downloadQRCodeImageWithLogo()` function that downloads QR codes
+
 ## 🎨 UI Components
 
 ### Component Library

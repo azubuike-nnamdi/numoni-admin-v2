@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGerReviewsByMerchantId from "@/hooks/query/useGerReviewsByMerchantId";
+import { extractErrorMessage } from "@/lib/helper";
 import { Bell, Info } from "lucide-react";
 
 interface ReportsSectionProps {
@@ -43,7 +44,7 @@ export default function ReportsSection({
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <ErrorState
           title="Error Loading Reports"
-          message={error?.message || "Failed to load reports data. Please try again."}
+          message={extractErrorMessage(error) || "Failed to load reports data. Please try again."}
           onRetry={refetch}
           retryText="Retry"
         />

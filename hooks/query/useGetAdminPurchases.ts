@@ -2,6 +2,7 @@
 
 import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { format, parseISO } from "date-fns";
 
 interface GetAdminPurchasesParams {
   page?: number;
@@ -11,6 +12,8 @@ interface GetAdminPurchasesParams {
   dealId?: string;
   customerName?: string;
   purchaseId?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 const useGetAdminPurchases = (params: GetAdminPurchasesParams = {}) => {
@@ -22,10 +25,12 @@ const useGetAdminPurchases = (params: GetAdminPurchasesParams = {}) => {
     dealId,
     customerName,
     purchaseId,
+    startDate,
+    endDate,
   } = params;
 
   const { data, isPending, error, isError, refetch } = useQuery({
-    queryKey: ["admin-purchases", page, size, dealName, transactionId, dealId, customerName, purchaseId],
+    queryKey: ["admin-purchases", page, size, dealName, transactionId, dealId, customerName, purchaseId, startDate, endDate],
     queryFn: () => {
       const queryParams = new URLSearchParams();
 
@@ -39,6 +44,15 @@ const useGetAdminPurchases = (params: GetAdminPurchasesParams = {}) => {
       if (dealId) queryParams.append("dealId", dealId);
       if (customerName) queryParams.append("customerName", customerName);
       if (purchaseId) queryParams.append("purchaseId", purchaseId);
+
+      if (startDate) {
+        const formattedDate = format(parseISO(startDate), "dd-MM-yyyy");
+        queryParams.append("startDate", formattedDate);
+      }
+      if (endDate) {
+        const formattedDate = format(parseISO(endDate), "dd-MM-yyyy");
+        queryParams.append("endDate", formattedDate);
+      }
 
       const queryString = queryParams.toString();
       return api.get(`/admin/adminpurchases?${queryString}`);

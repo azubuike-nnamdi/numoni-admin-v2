@@ -1,68 +1,23 @@
 'use client';
 
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import useGetSponsorDeals from "@/hooks/query/useGetSponsorDeals";
 import { useDebounce } from "@/hooks/utils/useDebounce";
-import { usePurchasesPagination } from "@/hooks/utils/usePurchasesPagination";
+import { SponsorDealApiItem, SponsorDealApiResponse } from "@/lib/types";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { createSponsorDealColumns, SponsorDeal } from "./sponsored-deal-columns";
 import SponsoredDealDataSection from "./sponsored-deal-data-section";
 import SponsoredDealHeaderSection from "./sponsored-deal-header-section";
-import SponsoredDealPagination from "./sponsored-deal-pagination";
 
-const ITEMS_PER_PAGE = 10;
 
-interface SponsorDealApiItem {
-  id: string;
-  heading: string;
-  description: string;
-  dealId: string;
-  backgroundImage: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface SponsorDealApiResponse {
-  content: SponsorDealApiItem[];
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-    sort: Array<{
-      direction: string;
-      property: string;
-      ignoreCase: boolean;
-      nullHandling: string;
-      ascending: boolean;
-      descending: boolean;
-    }>;
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
-  };
-  last: boolean;
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-  sort: Array<{
-    direction: string;
-    property: string;
-    ignoreCase: boolean;
-    nullHandling: string;
-    ascending: boolean;
-    descending: boolean;
-  }>;
-  first: boolean;
-  numberOfElements: number;
-  empty: boolean;
-}
 
 export default function SponsoredDeal() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [dealId, setDealId] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
@@ -77,7 +32,7 @@ export default function SponsoredDeal() {
 
   const { data: sponsorDealsData, isPending: isSponsorDealsPending, error: sponsorDealsError, isError: isSponsorDealsError, refetch: refetchSponsorDeals } = useGetSponsorDeals({
     page: currentPage,
-    size: ITEMS_PER_PAGE,
+    size: pageSize,
     dealId: debouncedDealId.trim() || undefined,
   });
 
@@ -115,18 +70,19 @@ export default function SponsoredDeal() {
     setCurrentPage(0);
   };
 
-  const { startIndex, endIndex, handlePreviousPage, handleNextPage } = usePurchasesPagination(
-    currentPage,
-    totalRows,
-    ITEMS_PER_PAGE,
-    totalPages,
-    setCurrentPage
-  );
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(0);
+  };
 
   const columns = createSponsorDealColumns({
     onImageClick: handleImageClick,
     currentPage,
-    pageSize: ITEMS_PER_PAGE,
+    pageSize: pageSize,
   });
 
   if (isSponsorDealsPending) {
@@ -162,14 +118,13 @@ export default function SponsoredDeal() {
         <SponsoredDealDataSection data={deals} columns={columns} />
 
         {deals.length > 0 && (
-          <SponsoredDealPagination
-            startIndex={startIndex}
-            endIndex={endIndex}
-            totalItems={totalRows}
-            currentPage={currentPage + 1}
+          <DataTablePagination
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPreviousPage={handlePreviousPage}
-            onNextPage={handleNextPage}
+            totalRows={totalRows}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
           />
         )}
       </div>

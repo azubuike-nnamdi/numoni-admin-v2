@@ -3,6 +3,7 @@
 import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import useGetTicketTypeList from "@/hooks/query/useGetTicketTypeList";
+import { extractErrorMessage } from "@/lib/helper";
 
 export default function ViewTicketTypes() {
 
@@ -15,7 +16,7 @@ export default function ViewTicketTypes() {
   }
 
   if (isErrorTicketTypeList) {
-    return <ErrorState title="Error Loading Ticket Types" message={errorTicketTypeList?.message || "Failed to load ticket types. Please try again."} onRetry={() => refetchTicketTypeList()} retryText="Try Again" />;
+    return <ErrorState title="Error Loading Ticket Types" message={extractErrorMessage(errorTicketTypeList) || "Failed to load ticket types. Please try again."} onRetry={() => refetchTicketTypeList()} retryText="Try Again" />;
   }
 
   return (

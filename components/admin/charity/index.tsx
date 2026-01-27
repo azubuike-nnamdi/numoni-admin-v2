@@ -1,5 +1,6 @@
 'use client';
 
+import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import useGetAllCharity from '@/hooks/query/useGetAllCharity';
 import { CharityData } from '@/lib/types';
@@ -8,7 +9,6 @@ import { charityColumns } from './charity-columns';
 import CharityDataSection from './charity-data-section';
 import CharityErrorDisplay from './charity-error-display';
 import CharityHeaderSection from './charity-header-section';
-import CharityPagination from './charity-pagination';
 
 
 export default function Charity() {
@@ -17,7 +17,7 @@ export default function Charity() {
   const [currentPage, setCurrentPage] = useState(0); // 0-based for server-side pagination
   const [showFilters, setShowFilters] = useState(false);
 
-  const itemsPerPage = 20;
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   // Debounce search term - wait 1 second after user stops typing
   useEffect(() => {
@@ -37,26 +37,27 @@ export default function Charity() {
     charityName: debouncedSearchTerm.trim() || undefined, // Send debounced search term as charityName filter
   });
 
-
-
   // Extract charity data from API response
   const apiData = data?.data;
   const charities: CharityData[] = apiData?.charities || [];
   const totalRows = apiData?.totalRows || 0;
   const totalPages = apiData?.totalPages || 0;
 
-  // Calculate pagination display values
-  const startIndex = currentPage * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, totalRows);
-
-  const handlePreviousPage = () => setCurrentPage(prev => Math.max(prev - 1, 0));
-  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1));
   const handleResetFilter = () => {
     setSearchTerm('');
     setDebouncedSearchTerm('');
     setCurrentPage(0);
   };
   const handleToggleFilters = () => setShowFilters(!showFilters);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(0); // Reset to first page when page size changes
+  };
 
   // Reset to first page when debounced search term changes
   useEffect(() => {
@@ -84,14 +85,13 @@ export default function Charity() {
       <CharityDataSection data={charities} columns={charityColumns} />
 
       {charities?.length > 0 && (
-        <CharityPagination
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalItems={totalRows}
-          currentPage={currentPage + 1} // Display as 1-based for UI
+        <DataTablePagination
+          currentPage={currentPage}
           totalPages={totalPages}
-          onPreviousPage={handlePreviousPage}
-          onNextPage={handleNextPage}
+          totalRows={totalRows}
+          pageSize={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
       )}
     </div>

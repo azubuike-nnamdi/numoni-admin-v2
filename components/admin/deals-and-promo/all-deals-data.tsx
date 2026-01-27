@@ -3,17 +3,16 @@
 import SearchInput from "@/components/common/search-input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useGetDealList from "@/hooks/query/useGetDealList";
-import { useDealsPagination } from "@/hooks/utils/useDealsPagination";
 import { useDebounce } from "@/hooks/utils/useDebounce";
 import { DealData } from "@/lib/types";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import DealsPagination from "./deals-pagination";
 import DealsTableContent from "./deals-table-content";
 
 export default function AllDealsData() {
@@ -22,7 +21,7 @@ export default function AllDealsData() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [page, setPage] = useState(0);
-  const [size] = useState(20);
+  const [size, setSize] = useState(20);
 
   // Debounce search term to avoid too many API calls
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -54,13 +53,14 @@ export default function AllDealsData() {
   const totalRows = apiResponse?.totalRows || 0;
   const totalPages = apiResponse?.totalPages || 0;
 
-  const { startIndex, endIndex, handlePreviousPage, handleNextPage } = useDealsPagination(
-    page,
-    totalRows,
-    size,
-    totalPages,
-    setPage
-  );
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setSize(newSize);
+    setPage(0);
+  };
 
   const handleResetFilter = () => {
     setSearchTerm("");
@@ -194,15 +194,14 @@ export default function AllDealsData() {
       />
 
       {/* Pagination Controls */}
-      {dealsData && dealsData.length > 0 && (
-        <DealsPagination
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalItems={totalRows}
-          currentPage={page + 1}
+      {dealsData && dealsData?.length > 0 && (
+        <DataTablePagination
+          currentPage={page}
           totalPages={totalPages}
-          onPreviousPage={handlePreviousPage}
-          onNextPage={handleNextPage}
+          totalRows={totalRows}
+          pageSize={size}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
       )}
     </div>

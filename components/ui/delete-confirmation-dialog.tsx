@@ -53,14 +53,15 @@ export function DeleteConfirmationDialog({
           </p>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-6">
-          <Button variant="outline" onClick={onClose} disabled={isLoading} className="w-full sm:w-auto">
+          <Button variant="outline" onClick={onClose} disabled={isLoading}
+            className="bg-theme-dark-green hover:bg-theme-dark-green/90 text-white px-12 py-6 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Cancel
           </Button>
           <Button
             variant="destructive"
             onClick={onConfirm}
             disabled={isLoading}
-            className="w-full sm:w-auto bg-theme-dark-green"
+            className="bg-red-600 hover:bg-red-700 text-white px-12 py-6 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             isLoading={isLoading}
             loadingText="Deleting..."
           >

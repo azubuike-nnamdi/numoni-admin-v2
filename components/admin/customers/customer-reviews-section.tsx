@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetCustomerReviewsById from "@/hooks/query/useGetCustomerReviesById";
+import { extractErrorMessage } from "@/lib/helper";
 import { useState } from "react";
 import CustomerReviewTable from "./customer-review-table";
 
@@ -54,7 +55,7 @@ export default function CustomerReviewsSection({
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <ErrorState
           title="Error Loading Reviews"
-          message={error?.message || "Failed to load reviews. Please try again."}
+          message={extractErrorMessage(error) || "Failed to load reviews. Please try again."}
           onRetry={refetch}
           retryText="Retry"
         />

@@ -4,7 +4,7 @@ import { MetricCard } from "@/components/common/metric-card";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetFundingOverview from "@/hooks/query/useGetFundingOverview";
-import { formatValue } from "@/lib/helper";
+import { extractErrorMessage, formatValue } from "@/lib/helper";
 import { Banknote, Gift, ShoppingCart, TrendingUp } from "lucide-react";
 
 export default function FundingCard() {
@@ -48,7 +48,7 @@ export default function FundingCard() {
       <div className="mb-8">
         <ErrorState
           title="Error Loading Funding Overview"
-          message={error?.message || "Failed to load funding overview. Please try again."}
+          message={extractErrorMessage(error) || "Failed to load funding overview. Please try again."}
           onRetry={refetch}
           retryText="Retry"
         />

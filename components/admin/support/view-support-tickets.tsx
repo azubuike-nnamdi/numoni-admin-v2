@@ -31,10 +31,10 @@ export default function ViewSupportTickets() {
     return allTickets.filter(ticket =>
       ticket.name.toLowerCase().includes(searchLower) ||
       ticket.userType.toLowerCase().includes(searchLower) ||
-      (ticket.ticketType && ticket.ticketType.toLowerCase().includes(searchLower)) ||
-      (ticket.description && ticket.description.toLowerCase().includes(searchLower)) ||
-      (ticket.assignToName && ticket.assignToName.toLowerCase().includes(searchLower)) ||
-      (ticket.status && ticket.status.toLowerCase().includes(searchLower))
+      (ticket.ticketType?.toLowerCase().includes(searchLower)) ||
+      (ticket.description?.toLowerCase().includes(searchLower)) ||
+      (ticket.assignToName?.toLowerCase().includes(searchLower)) ||
+      (ticket.status?.toLowerCase().includes(searchLower))
     );
   }, [searchTerm, allTickets]);
 

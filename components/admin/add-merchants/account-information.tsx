@@ -8,7 +8,7 @@ import { CheckCircle, Star, User } from "lucide-react";
 
 export default function AccountInformation({
   merchantData
-}: { merchantData: MerchantDetailsResponse }) {
+}: { readonly merchantData: MerchantDetailsResponse }) {
 
   const leftColumnItems: InfoItem[] = [
     { label: "Registration Date", value: formatDateReadable(merchantData?.registrationDate || "N/A") },
@@ -23,6 +23,8 @@ export default function AccountInformation({
     { label: "Account Status", value: merchantData?.status || "N/A", isBadge: true },
     { label: "Identity Number", value: merchantData?.identificationTypeNumber || "N/A" },
     { label: "Minimum Threshold", value: merchantData?.minimumThreshold || "N/A" },
+    { label: "Approved Status", value: merchantData?.approvalStatus || "N/A", isBadge: true },
+
   ];
 
   return (

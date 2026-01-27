@@ -1,3 +1,5 @@
+import { DateRangeOption } from '@/lib/types';
+import { endOfToday, format, startOfToday } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useDebounce } from './useDebounce';
 
@@ -7,12 +9,15 @@ interface PurchasesFilters {
   transactionId: string;
   dealId: string;
   purchaseId: string;
+  startDate: string;
+  endDate: string;
+  dateRangeOption: DateRangeOption;
 }
 
 interface UsePurchasesFiltersReturn {
   filters: PurchasesFilters;
   debouncedFilters: PurchasesFilters;
-  setFilter: (key: keyof PurchasesFilters, value: string) => void;
+  setFilter: <K extends keyof PurchasesFilters>(key: K, value: PurchasesFilters[K]) => void;
   resetFilters: () => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -26,6 +31,9 @@ const initialFilters: PurchasesFilters = {
   transactionId: '',
   dealId: '',
   purchaseId: '',
+  startDate: format(startOfToday(), 'yyyy-MM-dd'),
+  endDate: format(endOfToday(), 'yyyy-MM-dd'),
+  dateRangeOption: 'Today',
 };
 
 export function usePurchasesFilters(): UsePurchasesFiltersReturn {
@@ -39,6 +47,9 @@ export function usePurchasesFilters(): UsePurchasesFiltersReturn {
   const debouncedTransactionId = useDebounce(filters.transactionId);
   const debouncedDealId = useDebounce(filters.dealId);
   const debouncedPurchaseId = useDebounce(filters.purchaseId);
+  const debouncedStartDate = useDebounce(filters.startDate);
+  const debouncedEndDate = useDebounce(filters.endDate);
+  const debouncedDateRangeOption = useDebounce(filters.dateRangeOption);
 
   const debouncedFilters: PurchasesFilters = {
     customerName: debouncedCustomerName,
@@ -46,6 +57,9 @@ export function usePurchasesFilters(): UsePurchasesFiltersReturn {
     transactionId: debouncedTransactionId,
     dealId: debouncedDealId,
     purchaseId: debouncedPurchaseId,
+    startDate: debouncedStartDate,
+    endDate: debouncedEndDate,
+    dateRangeOption: debouncedDateRangeOption,
   };
 
   // Reset to first page when any debounced filter changes
@@ -57,9 +71,12 @@ export function usePurchasesFilters(): UsePurchasesFiltersReturn {
     debouncedTransactionId,
     debouncedDealId,
     debouncedPurchaseId,
+    debouncedStartDate,
+    debouncedEndDate,
+    debouncedDateRangeOption,
   ]);
 
-  const setFilter = (key: keyof PurchasesFilters, value: string) => {
+  const setFilter = <K extends keyof PurchasesFilters>(key: K, value: PurchasesFilters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -83,4 +100,3 @@ export function usePurchasesFilters(): UsePurchasesFiltersReturn {
     toggleFilters,
   };
 }
-

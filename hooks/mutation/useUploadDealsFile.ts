@@ -24,7 +24,7 @@ export const useUploadDealsFile = () => {
 
       if (data) {
 
-        console.log('Data:', data?.data?.data?.imageUrl);
+        // console.log('Data:', data?.data?.data?.imageUrl);
         const imagePath = data?.data?.data?.imageUrl;
         // console.log('imagePath', imagePath);
         if (imagePath) {

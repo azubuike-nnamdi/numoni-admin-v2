@@ -1,3 +1,5 @@
+import { DateRangeOption } from '@/lib/types';
+import { endOfToday, format, startOfToday } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useDebounce } from './useDebounce';
 
@@ -6,12 +8,15 @@ interface PayoutFilters {
   settlementRefId: string;
   payonusRefId: string;
   status: string;
+  startDate: string;
+  endDate: string;
+  dateRangeOption: DateRangeOption;
 }
 
 interface UsePayoutFiltersReturn {
   filters: PayoutFilters;
   debouncedFilters: PayoutFilters;
-  setFilter: (key: keyof PayoutFilters, value: string) => void;
+  setFilter: <K extends keyof PayoutFilters>(key: K, value: PayoutFilters[K]) => void;
   resetFilters: () => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -24,6 +29,9 @@ const initialFilters: PayoutFilters = {
   settlementRefId: '',
   payonusRefId: '',
   status: '',
+  startDate: format(startOfToday(), 'yyyy-MM-dd'),
+  endDate: format(endOfToday(), 'yyyy-MM-dd'),
+  dateRangeOption: 'Today',
 };
 
 export function usePayoutFilters(): UsePayoutFiltersReturn {
@@ -36,12 +44,18 @@ export function usePayoutFilters(): UsePayoutFiltersReturn {
   const debouncedSettlementRefId = useDebounce(filters.settlementRefId);
   const debouncedPayonusRefId = useDebounce(filters.payonusRefId);
   const debouncedStatus = useDebounce(filters.status);
+  const debouncedStartDate = useDebounce(filters.startDate);
+  const debouncedEndDate = useDebounce(filters.endDate);
+  const debouncedDateRangeOption = useDebounce(filters.dateRangeOption);
 
   const debouncedFilters: PayoutFilters = {
     merchantId: debouncedMerchantId,
     settlementRefId: debouncedSettlementRefId,
     payonusRefId: debouncedPayonusRefId,
     status: debouncedStatus,
+    startDate: debouncedStartDate,
+    endDate: debouncedEndDate,
+    dateRangeOption: debouncedDateRangeOption,
   };
 
   // Reset to first page when any debounced filter changes
@@ -52,9 +66,12 @@ export function usePayoutFilters(): UsePayoutFiltersReturn {
     debouncedSettlementRefId,
     debouncedPayonusRefId,
     debouncedStatus,
+    debouncedStartDate,
+    debouncedEndDate,
+    debouncedDateRangeOption,
   ]);
 
-  const setFilter = (key: keyof PayoutFilters, value: string) => {
+  const setFilter = <K extends keyof PayoutFilters>(key: K, value: PayoutFilters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -78,4 +95,3 @@ export function usePayoutFilters(): UsePayoutFiltersReturn {
     toggleFilters,
   };
 }
-

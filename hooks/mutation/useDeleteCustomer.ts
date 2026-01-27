@@ -17,7 +17,6 @@ export const useDeleteCustomer = () => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
     },
     onError: (error: { response: { data: { message: string } } }) => {
-      console.log("Failed to delete customer", error);
       toast.error(error?.response?.data?.message ?? "Failed to delete customer");
     },
   });

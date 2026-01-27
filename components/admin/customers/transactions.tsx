@@ -3,11 +3,14 @@
 import { DataTable } from '@/components/ui/data-table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
+import { ErrorState } from '@/components/ui/error-state';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import useGetCustomersTransactions from '@/hooks/query/useGetCustomersTransactions';
+import { useDebounce } from '@/hooks/utils/useDebounce';
+import { extractErrorMessage } from '@/lib/helper';
 import { CustomerTransaction } from '@/lib/types';
 import { ChevronDown, ChevronLeft, ChevronRight, Download, Info, RefreshCw, Search, Trash2, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { customerTransactionColumns } from './transaction-columns';
 
 export default function Transactions() {
@@ -15,39 +18,23 @@ export default function Transactions() {
   const [currentPage, setCurrentPage] = useState(1);
   const [orderStatus, setOrderStatus] = useState('');
 
-  const { data, isPending, error, isError } = useGetCustomersTransactions();
+  // Debounce search term to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
+
+  const { data, isPending, error, isError, refetch } = useGetCustomersTransactions({
+    customerName: debouncedSearchTerm.trim() || undefined,
+    transactionType: orderStatus || undefined,
+    page: currentPage - 1,
+    size: 30, // Standard page size
+  });
   const apiData = data?.data?.data;
 
-  const itemsPerPage = 12; // Based on the design showing 12 items
+  const itemsPerPage = 30;
 
-  // Filter transactions based on search term and order status (transaction type)
-  const filteredTransactions = useMemo(() => {
-    const transactionsData: CustomerTransaction[] = apiData?.pageData || [];
-    let filtered = transactionsData;
-
-    // Search filter
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(transaction =>
-        (transaction.customerName || '').toLowerCase().includes(searchLower) ||
-        (transaction.customerId || '').toLowerCase().includes(searchLower) ||
-        transaction.transactionId.toLowerCase().includes(searchLower) ||
-        transaction.type.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Order Status filter (maps to transaction type)
-    if (orderStatus) {
-      filtered = filtered.filter(transaction => transaction.type === orderStatus);
-    }
-
-    return filtered;
-  }, [searchTerm, orderStatus, apiData?.pageData]);
-
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentTransactions = filteredTransactions.slice(startIndex, endIndex);
+  // Use transactions directly from API
+  const transactions: CustomerTransaction[] = apiData?.pageData || [];
+  const totalPages = apiData?.totalPages || 1;
+  const totalRows = apiData?.totalRows || 0;
 
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
@@ -61,6 +48,11 @@ export default function Transactions() {
     setOrderStatus('');
     setSearchTerm('');
   };
+
+  // Reset to first page when debounced search term or order status changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm, orderStatus]);
 
   // Transaction type options for the dropdown
   const transactionTypeOptions = [
@@ -79,26 +71,18 @@ export default function Transactions() {
   // Show error state
   if (isError) {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 p-8">
-        <div className="text-center">
-          <div className="text-red-500 text-lg font-semibold mb-2">Error Loading Transactions</div>
-          <div className="text-gray-600 mb-4">
-            {error?.message || "Failed to load transactions. Please try again."}
-          </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <ErrorState
+        title="Error Loading Transactions"
+        message={extractErrorMessage(error) || "Failed to load transactions. Please try again."}
+        onRetry={refetch}
+        retryText="Retry"
+      />
     );
   }
 
   // Render function for data table content
   const renderDataTableContent = () => {
-    if (currentTransactions.length === 0) {
+    if (transactions.length === 0) {
       return (
         <EmptyState
           title="No Transactions Found"
@@ -107,7 +91,7 @@ export default function Transactions() {
       );
     }
 
-    return <DataTable columns={customerTransactionColumns} data={currentTransactions} />;
+    return <DataTable columns={customerTransactionColumns} data={transactions} />;
   };
 
   return (
@@ -120,7 +104,7 @@ export default function Transactions() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search transactions..."
+              placeholder="Search by customer name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -180,12 +164,12 @@ export default function Transactions() {
       </div>
 
       {/* Pagination and Row Actions */}
-      {currentTransactions.length > 0 && (
+      {transactions.length > 0 && (
         <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             {/* Row Count */}
             <div className="text-sm text-gray-600">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length}
+              Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalRows)} of {totalRows}
             </div>
 
             {/* Row Action Icons */}

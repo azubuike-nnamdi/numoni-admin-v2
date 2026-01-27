@@ -146,7 +146,7 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 bg-white text-gray-900 z-50 border border-r-1",
+          "fixed top-0 left-0 h-full w-80 bg-white text-gray-900 z-50 border border-r",
           "transform transition-transform duration-300 ease-in-out",
           "lg:translate-x-0 lg:w-64",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -189,7 +189,7 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
                 System Management
               </h3>
               <div className="space-y-1">
-                {adminNavigationItem.slice(7, 9).map(renderNavigationItem)}
+                {adminNavigationItem.slice(7, 10).map(renderNavigationItem)}
               </div>
               <hr className="mt-4 border-gray-200" />
             </div>
@@ -200,7 +200,7 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
                 Analytics & Reports
               </h3>
               <div className="space-y-1">
-                {adminNavigationItem.slice(10).map(renderNavigationItem)}
+                {adminNavigationItem.slice(11).map(renderNavigationItem)}
               </div>
               {/* <hr className="mt-4 border-gray-200" /> */}
             </div>

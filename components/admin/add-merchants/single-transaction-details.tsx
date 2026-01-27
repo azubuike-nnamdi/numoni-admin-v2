@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import useGetMerchantTransactionDetailsById from "@/hooks/query/useGetMerchantTransactionDetailsById";
-import { formatCurrency, formatDateReadable, getStatusColor, getTransactionTypeColor } from "@/lib/helper";
+import { extractErrorMessage, formatCurrency, formatDateReadable, getStatusColor, getTransactionTypeColor } from "@/lib/helper";
 import { IndividualMerchantTransactionDetails } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,10 @@ export default function SingleTransactionDetails({ transactionId }: { transactio
   }
 
   if (isError) {
-    return <ErrorState title="Error Loading Transaction Details" message={error?.message || "Failed to load transaction details. Please try again."} onRetry={refetch} retryText="Retry" />;
+    return <ErrorState
+      title="Error Loading Transaction Details"
+      message={extractErrorMessage(error) || "Failed to load transaction details. Please try again."} onRetry={refetch}
+      retryText="Retry" />;
   }
 
   const transactionDetails = data?.data?.data as IndividualMerchantTransactionDetails | undefined;

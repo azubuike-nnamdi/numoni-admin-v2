@@ -2,6 +2,7 @@
 
 import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { format, parseISO } from "date-fns";
 
 interface GetFundingReconciliationParams {
   page?: number;
@@ -40,8 +41,15 @@ const useGetFundingReconciliation = (params: GetFundingReconciliationParams = {}
       if (providerId) queryParams.append("providerId", providerId);
       if (senderName) queryParams.append("senderName", senderName);
       if (customerId) queryParams.append("customerId", customerId);
-      if (startDate) queryParams.append("startDate", startDate);
-      if (endDate) queryParams.append("endDate", endDate);
+
+      if (startDate) {
+        const formattedDate = format(parseISO(startDate), "dd-MM-yyyy");
+        queryParams.append("startDate", formattedDate);
+      }
+      if (endDate) {
+        const formattedDate = format(parseISO(endDate), "dd-MM-yyyy");
+        queryParams.append("endDate", formattedDate);
+      }
 
       const queryString = queryParams.toString();
       return api.get(`/admin/getFundingReconciliation?${queryString}`);

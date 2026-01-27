@@ -9,7 +9,5 @@ export default function Page() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('userId');
 
-
-  // console.log(id);
   return <MerchantDetails merchantId={id} userId={userId} />;
 }

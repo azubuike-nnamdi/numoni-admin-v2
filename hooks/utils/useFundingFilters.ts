@@ -1,3 +1,5 @@
+import { DateRangeOption } from '@/lib/types';
+import { endOfToday, format, startOfToday } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useDebounce } from './useDebounce';
 
@@ -8,12 +10,13 @@ interface FundingFilters {
   customerId: string;
   startDate: string;
   endDate: string;
+  dateRangeOption: DateRangeOption;
 }
 
 interface UseFundingFiltersReturn {
   filters: FundingFilters;
   debouncedFilters: FundingFilters;
-  setFilter: (key: keyof FundingFilters, value: string) => void;
+  setFilter: <K extends keyof FundingFilters>(key: K, value: FundingFilters[K]) => void;
   resetFilters: () => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -26,8 +29,9 @@ const initialFilters: FundingFilters = {
   providerId: '',
   senderName: '',
   customerId: '',
-  startDate: '',
-  endDate: '',
+  startDate: format(startOfToday(), 'yyyy-MM-dd'),
+  endDate: format(endOfToday(), 'yyyy-MM-dd'),
+  dateRangeOption: 'Today',
 };
 
 export function useFundingFilters(): UseFundingFiltersReturn {
@@ -42,6 +46,7 @@ export function useFundingFilters(): UseFundingFiltersReturn {
   const debouncedCustomerId = useDebounce(filters.customerId);
   const debouncedStartDate = useDebounce(filters.startDate);
   const debouncedEndDate = useDebounce(filters.endDate);
+  const debouncedDateRangeOption = useDebounce(filters.dateRangeOption);
 
   const debouncedFilters: FundingFilters = {
     sessionId: debouncedSessionId,
@@ -50,6 +55,7 @@ export function useFundingFilters(): UseFundingFiltersReturn {
     customerId: debouncedCustomerId,
     startDate: debouncedStartDate,
     endDate: debouncedEndDate,
+    dateRangeOption: debouncedDateRangeOption,
   };
 
   // Reset to first page when any debounced filter changes
@@ -62,9 +68,10 @@ export function useFundingFilters(): UseFundingFiltersReturn {
     debouncedCustomerId,
     debouncedStartDate,
     debouncedEndDate,
+    debouncedDateRangeOption,
   ]);
 
-  const setFilter = (key: keyof FundingFilters, value: string) => {
+  const setFilter = <K extends keyof FundingFilters>(key: K, value: FundingFilters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -88,4 +95,3 @@ export function useFundingFilters(): UseFundingFiltersReturn {
     toggleFilters,
   };
 }
-

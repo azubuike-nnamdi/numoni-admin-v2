@@ -491,6 +491,10 @@ type CreateMerchantsPayload = {
   state: string;
   lga: string;
   businessDescription: string;
+  businessImagePath?: string[];
+  businessOpenHours?: string;
+  businessClosingHours?: string;
+  cacDocumentPath?: string;
   password: string;
   confirmPassword: string;
   contactPersonName: string;
@@ -548,9 +552,9 @@ type MetricCardProps = {
   value: string;
   change?: string;
   changeType?: 'positive' | 'negative';
-  icon: React.ReactNode;
-  bgColor: string;
-  iconBgColor: string;
+  icon?: React.ReactNode;
+  bgColor?: string;
+  iconBgColor?: string;
 }
 
 
@@ -603,6 +607,7 @@ type MerchantDetailsResponse = {
   identificationType: string | null,
   identificationTypeNumber: string | null,
   minimumThreshold: string | null,
+  approvalStatus: string | null,
   locations: [
     {
       id: string | null,
@@ -755,7 +760,20 @@ type UpdateMerchantPayload = {
   accountHolderName?: string;
 }
 
-
+type UpdatePosPayload = {
+  id: string;
+  posId: string;
+  posName: string;
+  merchantId: string;
+  branchId: string;
+  bankName: string;
+  accountNo: string;
+  accountHolderName: string;
+  bankCode: string;
+  bankTransferCode: string;
+  location: string;
+  address: string;
+}
 type CharityData = {
   id: string;
   charityName: string;
@@ -810,6 +828,27 @@ type DealData = {
     dealId: string;
     imagePath: string;
   }>;
+}
+
+type PosData = {
+  id: string;
+  posId: string;
+  posName: string;
+  merchantId: string;
+  branchId: string | null;
+  bankName: string;
+  accountNo: string;
+  accountHolderName: string;
+  bankCode: string;
+  bankTransferCode: string;
+  location: string | null;
+  address: string | null;
+  status: string;
+  posQRCode: string;
+  createDate: string;
+  updatedDate: string;
+  merchantLogo: string | null;
+  merchantName: string | null;
 }
 
 type Merchant = {
@@ -1205,5 +1244,83 @@ type DealInformationProps = {
   isBranchDeal?: boolean;
   branchId?: string | null;
 }
-export type { AccountInformationProps, ActiveBranchModalProps, AdjustBalancePayload, AdjustPointPayload, AdminNavigationItem, ApiActivityLog, AuthUser, AuthUserStore, AxiosError, Bank, BankPayload, BankToken, Branch, BranchAnalyticsData, BranchManagerPayload, BranchSummaryData, BrandProfileProps, BrandSummaryProps, CacVerificationResponse, ChangeBranchStatusPayload, CharityData, ChartDataPoint, CreateAdminPayload, CreateCharityPayload, CreateCustomerKycPayload, CreateCustomersPayload, CreateDealsPayload, CreateMerchantsPayload, CreateModulePayload, CreatePrivilegeMappingPayload, CreateRewardsPayload, CreateRolePayload, CreateTicketTypePayload, Customer, CustomerAnalyticsData, CustomerAnalyticsResponse, CustomerCardProps, CustomerDetailsResponse, CustomerSectionProps, CustomerTransaction, DashboardMetrics, DashboardProps, DateSectionProps, DealData, DealInformationProps, EditDealPayload, ErrorDisplayProps, ExpirationSectionProps, Funding, FundingReconciliation, FundingReconciliationApiResponse, GetBranchesResponse, IndividualMerchantTransactionDetails, InfoItem, MainBranchSummaryProps, Merchant, MerchantDetailsResponse, MerchantRewardRule, MerchantTransaction, MetricCardProps, MetricItem, MilestoneTargetSectionProps, PaginatedFundingReconciliationData, PaginatedPayoutData, Payout, PayoutApiResponse, PayoutPagination, PointAnalyticsProps, PointFlowData, QRCodeCardProps, ReceiveMethodSectionProps, RewardCapSectionProps, RewardData, RewardModalProps, RewardRule, RewardRuleApiItem, RewardRuleApiResponse, RewardRulesSectionProps, Rewards, RuleCardProps, SidebarProps, signInPayload, singleBranchDetails, SocialMediaData, TanstackProviderProps, Transaction, UpdateBranchManagerPayload, UpdateDealStatusPayload, UpdateKycStatusPayload, UpdateMerchantPayload, UpdateRewardRuleModalProps, VerifyBankNamePayload, VerifyBankPayload, VerifyPayOnUsBankPayload };
+
+type DateRangeOption = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Last Month' | 'Custom Range' | 'All Time' | null;
+
+type UpdateMerchantVerificationStatusPayload = {
+  merchantId: string;
+  status: 'APPROVED' | 'REJECTED' | 'SUSPENDED' | 'VERIFIED' | 'UNVERIFIED';
+}
+
+
+
+type PointAllocationApiItem = {
+  customerName: string;
+  customerCode: string;
+  pointBalance: number;
+  expireDate: string;
+  location: string;
+}
+
+type PointAllocationPagination = {
+  totalPages: number;
+  pageSize: number;
+  currentPage: number;
+  totalElements: number;
+}
+type PointAllocationApiResponse = {
+  pagination: PointAllocationPagination;
+  data: PointAllocationApiItem[];
+  success: boolean;
+  message: string;
+}
+
+type SponsorDealApiItem = {
+  id: string;
+  heading: string;
+  description: string;
+  dealId: string;
+  backgroundImage: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+type SponsorDealApiResponse = {
+  content: SponsorDealApiItem[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: Array<{
+      direction: string;
+      property: string;
+      ignoreCase: boolean;
+      nullHandling: string;
+      ascending: boolean;
+      descending: boolean;
+    }>;
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: Array<{
+    direction: string;
+    property: string;
+    ignoreCase: boolean;
+    nullHandling: string;
+    ascending: boolean;
+    descending: boolean;
+  }>;
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+
+export type { AccountInformationProps, ActiveBranchModalProps, AdjustBalancePayload, AdjustPointPayload, AdminNavigationItem, ApiActivityLog, AuthUser, AuthUserStore, AxiosError, Bank, BankPayload, BankToken, Branch, BranchAnalyticsData, BranchManagerPayload, BranchSummaryData, BrandProfileProps, BrandSummaryProps, CacVerificationResponse, ChangeBranchStatusPayload, CharityData, ChartDataPoint, CreateAdminPayload, CreateCharityPayload, CreateCustomerKycPayload, CreateCustomersPayload, CreateDealsPayload, CreateMerchantsPayload, CreateModulePayload, CreatePrivilegeMappingPayload, CreateRewardsPayload, CreateRolePayload, CreateTicketTypePayload, Customer, CustomerAnalyticsData, CustomerAnalyticsResponse, CustomerCardProps, CustomerDetailsResponse, CustomerSectionProps, CustomerTransaction, DashboardMetrics, DashboardProps, DateRangeOption, DateSectionProps, DealData, DealInformationProps, EditDealPayload, ErrorDisplayProps, ExpirationSectionProps, Funding, FundingReconciliation, FundingReconciliationApiResponse, GetBranchesResponse, IndividualMerchantTransactionDetails, InfoItem, MainBranchSummaryProps, Merchant, MerchantDetailsResponse, MerchantRewardRule, MerchantTransaction, MetricCardProps, MetricItem, MilestoneTargetSectionProps, PaginatedFundingReconciliationData, PaginatedPayoutData, Payout, PayoutApiResponse, PayoutPagination, PointAllocationApiItem, PointAllocationApiResponse, PointAllocationPagination, PointAnalyticsProps, PointFlowData, PosData, QRCodeCardProps, ReceiveMethodSectionProps, RewardCapSectionProps, RewardData, RewardModalProps, RewardRule, RewardRuleApiItem, RewardRuleApiResponse, RewardRulesSectionProps, Rewards, RuleCardProps, SidebarProps, signInPayload, singleBranchDetails, SocialMediaData, SponsorDealApiItem, SponsorDealApiResponse, TanstackProviderProps, Transaction, UpdateBranchManagerPayload, UpdateDealStatusPayload, UpdateKycStatusPayload, UpdateMerchantPayload, UpdateMerchantVerificationStatusPayload, UpdatePosPayload, UpdateRewardRuleModalProps, VerifyBankNamePayload, VerifyBankPayload, VerifyPayOnUsBankPayload };
 

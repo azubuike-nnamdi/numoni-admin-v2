@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { ErrorState } from '@/components/ui/error-state';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import useGetAdminList from '@/hooks/query/useGetAdminList';
+import { extractErrorMessage } from '@/lib/helper';
 import { Admin } from '@/lib/types/admin';
 import { ChevronDown, ChevronLeft, ChevronRight, Download, Filter, Info, RefreshCw, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -61,7 +62,7 @@ export default function ViewAdmin() {
   }
 
   if (isAdminListError) {
-    return <ErrorState title="Error Loading Admins" message={isAdminError?.message || "Failed to load admins. Please try again."} onRetry={() => refetchAdminList()} retryText="Try Again" />;
+    return <ErrorState title="Error Loading Admins" message={extractErrorMessage(isAdminError) || "Failed to load admins. Please try again."} onRetry={() => refetchAdminList()} retryText="Try Again" />;
   }
 
   return (

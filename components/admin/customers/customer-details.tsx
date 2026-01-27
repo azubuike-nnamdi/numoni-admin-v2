@@ -5,6 +5,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useAdjustCustomerBalance } from "@/hooks/mutation/useAdjustCustomerBalance";
 import { useAdjustCustomerPoint } from "@/hooks/mutation/useAdjustCustomerPoint";
 import useGetCustomerDetailsById from "@/hooks/query/useGetCustomerDetailsById";
+import { extractErrorMessage } from "@/lib/helper";
 import { useUserAuthStore } from "@/stores/user-auth-store";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -76,7 +77,7 @@ export default function CustomerDetails({ customerId }: { customerId: string }) 
 
   if (isError) {
     return (
-      <ErrorState title="Error Loading Customer Details" message={error?.message || "Failed to load customer details. Please try again."} onRetry={refetch} retryText="Retry" />
+      <ErrorState title="Error Loading Customer Details" message={extractErrorMessage(error) || "Failed to load customer details. Please try again."} onRetry={refetch} retryText="Retry" />
     );
   }
   return <div className="min-h-screen bg-gray-50 p-3">

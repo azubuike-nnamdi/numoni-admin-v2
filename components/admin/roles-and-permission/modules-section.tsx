@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useDeleteModule } from "@/hooks/mutation/useDeleteModule";
 import useGetAllModules from "@/hooks/query/useGetAllModules";
@@ -17,7 +18,7 @@ interface Module {
 }
 
 export default function ModulesSection() {
-  const { data, isPending, isError, error } = useGetAllModules();
+  const { data, isPending, isError, error, refetch } = useGetAllModules();
   const { handleDeleteModule: handleDeleteModuleMutation, isPending: isDeletingModule } = useDeleteModule();
   const allModules: Module[] = data?.data?.data ?? [];
 
@@ -34,9 +35,12 @@ export default function ModulesSection() {
 
   if (isError) {
     return (
-      <div className="flex justify-center items-center py-8">
-        <div className="text-red-500">Error loading modules: {error?.message}</div>
-      </div>
+      <ErrorState
+        title="Error Loading Modules"
+        message={error?.message || "Failed to load modules. Please try again."}
+        onRetry={refetch}
+        retryText="Try Again"
+      />
     );
   }
 

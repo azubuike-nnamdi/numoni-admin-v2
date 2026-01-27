@@ -4,7 +4,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import RuleCard from "@/components/ui/rule-card";
 import useGetMerchantRewardById from "@/hooks/query/useGetMerchantRewardById";
-import { formatNumberWithCommas, formatRewardType } from "@/lib/helper";
+import { extractErrorMessage, formatNumberWithCommas, formatRewardType } from "@/lib/helper";
 import { RewardRuleApiResponse } from "@/lib/types";
 
 export default function MerchantRuleCard({ userId }: { userId: string | null }) {
@@ -20,7 +20,7 @@ export default function MerchantRuleCard({ userId }: { userId: string | null }) 
     return (
       <ErrorState
         title="Error Loading Reward Rules"
-        message={rewardError?.message || "Failed to load reward rules. Please try again."}
+        message={extractErrorMessage(rewardError) || "Failed to load reward rules. Please try again."}
         onRetry={refetch}
         retryText="Retry"
       />

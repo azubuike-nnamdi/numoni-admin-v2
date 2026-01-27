@@ -1,8 +1,8 @@
 import { DealIcon } from "@/components/common/icon-svg";
 import { calenderIcon, dealIcon, emailIcon, giftIcon, graphDirectionIcon, grayPointIcon, instagramIcon, musicPauseIcon, phoneNotificationIcon, twitterIcon, whatsappIcon } from "@/constant/icons";
-import { ADMIN_ACTIVITY_LOGS_URL, ADMIN_CHARITY_ADD_URL, ADMIN_CHARITY_URL, ADMIN_CUSTOMERS_ADD_URL, ADMIN_CUSTOMERS_TRANSACTION_URL, ADMIN_CUSTOMERS_URL, ADMIN_DEALS_PROMO_ADD_URL, ADMIN_DEALS_PROMO_SPONSORED_DEAL_ADD_URL, ADMIN_DEALS_PROMO_SPONSORED_DEAL_URL, ADMIN_DEALS_PROMO_URL, ADMIN_FUNDING_URL, ADMIN_MANAGEMENT_ADD_URL, ADMIN_MANAGEMENT_URL, ADMIN_MERCHANTS_ADD_URL, ADMIN_MERCHANTS_ROLES_URL, ADMIN_MERCHANTS_TRANSACTION_URL, ADMIN_MERCHANTS_URL, ADMIN_NOTIFICATIONS_URL, ADMIN_REPORTS_CHARITY_URL, ADMIN_REPORTS_POINTS_URL, ADMIN_REPORTS_SUPPORT_URL, ADMIN_REPORTS_URL, ADMIN_TRANSACTIONS_PAYOUTS_URL, ADMIN_TRANSACTIONS_PURCHASES_URL, ADMIN_URL } from "@/constant/routes";
+import { ADMIN_ACTIVITY_LOGS_URL, ADMIN_CHARITY_ADD_URL, ADMIN_CHARITY_URL, ADMIN_CUSTOMERS_ADD_URL, ADMIN_CUSTOMERS_TRANSACTION_URL, ADMIN_CUSTOMERS_URL, ADMIN_DEALS_PROMO_ADD_URL, ADMIN_DEALS_PROMO_SPONSORED_DEAL_ADD_URL, ADMIN_DEALS_PROMO_SPONSORED_DEAL_URL, ADMIN_DEALS_PROMO_URL, ADMIN_FUNDING_URL, ADMIN_MANAGEMENT_ADD_URL, ADMIN_MANAGEMENT_URL, ADMIN_MERCHANTS_ADD_URL, ADMIN_MERCHANTS_POS_BRANCH_LIST_URL, ADMIN_MERCHANTS_POS_BRANCH_URL, ADMIN_MERCHANTS_ROLES_URL, ADMIN_MERCHANTS_TRANSACTION_URL, ADMIN_MERCHANTS_URL, ADMIN_NOTIFICATIONS_URL, ADMIN_REPORTS_CHARITY_URL, ADMIN_REPORTS_POINTS_URL, ADMIN_REPORTS_SUPPORT_URL, ADMIN_REPORTS_URL, ADMIN_SIGN_UP_BONUS_URL, ADMIN_TRANSACTIONS_PAYOUTS_URL, ADMIN_TRANSACTIONS_POINTS_URL, ADMIN_TRANSACTIONS_PURCHASES_URL, ADMIN_URL } from "@/constant/routes";
 import { AdminNavigationItem } from "@/lib/types";
-import { AppWindow, BarChart3, Bell, Building, ChartArea, FileBarChart, FileText, Heart, LayoutDashboard, Plus, Shield, Ticket, User, Users } from "lucide-react";
+import { AppWindow, BarChart3, Bell, Building, ChartArea, FileBarChart, FileText, Gift, Heart, LayoutDashboard, Plus, Shield, Ticket, User, Users } from "lucide-react";
 
 
 
@@ -167,8 +167,10 @@ const adminNavigationItem: AdminNavigationItem[] = [
     name: 'Merchants',
     icon: Users,
     children: [
-      { name: 'All Merchants', path: ADMIN_MERCHANTS_URL, icon: Users },
       { name: 'Add Merchant', path: ADMIN_MERCHANTS_ADD_URL, icon: Plus },
+      { name: 'All Merchants', path: ADMIN_MERCHANTS_URL, icon: Users },
+      { name: 'Add POS Branch', path: ADMIN_MERCHANTS_POS_BRANCH_URL, icon: Plus },
+      { name: 'All POS Branches', path: ADMIN_MERCHANTS_POS_BRANCH_LIST_URL, icon: Building },
       { name: 'Merchant Transactions', path: ADMIN_MERCHANTS_TRANSACTION_URL, icon: BarChart3 }
     ]
   },
@@ -207,6 +209,7 @@ const adminNavigationItem: AdminNavigationItem[] = [
       { name: 'Funding', path: ADMIN_FUNDING_URL, icon: ChartArea },
       { name: 'Purchases', path: ADMIN_TRANSACTIONS_PURCHASES_URL, icon: BarChart3 },
       { name: 'Payouts', path: ADMIN_TRANSACTIONS_PAYOUTS_URL, icon: FileText },
+      { name: 'Points', path: ADMIN_TRANSACTIONS_POINTS_URL, icon: FileText },
     ]
   },
   {
@@ -221,6 +224,14 @@ const adminNavigationItem: AdminNavigationItem[] = [
     name: 'Roles & Permission',
     path: ADMIN_MERCHANTS_ROLES_URL,
     icon: Shield
+  },
+  {
+    name: 'Sign Up Bonus',
+    icon: Gift,
+    children: [
+      { name: 'All Bonus', path: ADMIN_SIGN_UP_BONUS_URL, icon: Gift },
+      // { name: 'Add Bonus', path: ADMIN_SIGN_UP_BONUS_ADD_URL, icon: Plus },
+    ]
   },
   {
     name: 'Activity Logs',

@@ -10,6 +10,7 @@ import { MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { UpdateMerchantStatusDialog } from "./update-merchant-status-dialog";
 
 // Merchant type definition based on API response
 export type Merchant = {
@@ -110,7 +111,7 @@ export const merchantColumns: ColumnDef<Merchant>[] = [
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => {
-      const categories = row.getValue("category") as string[] | null;
+      const categories = row.original.category;
       return (
         <div className="flex flex-wrap gap-1">
           {categories?.map((cat, index) => (
@@ -138,12 +139,17 @@ export const merchantColumns: ColumnDef<Merchant>[] = [
 // Action Cell Component
 function ActionCell({ merchant }: { merchant: Merchant }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const { handleDeleteMerchant, isPending, isSuccess } = useDeleteMerchant();
   const router = useRouter();
 
   const handleViewProfile = () => {
     // Navigate to profile page
     router.push(`/dashboard/merchants/${merchant?.userId}/?merchantName=${encodeURIComponent(merchant.businessName)}`);
+  };
+
+  const handleUpdateMerchantStatus = () => {
+    setIsUpdateDialogOpen(true);
   };
 
   const handleDeleteMerchantClick = () => {
@@ -177,6 +183,12 @@ function ActionCell({ merchant }: { merchant: Merchant }) {
             >
               View Profile
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleUpdateMerchantStatus}
+              className="cursor-pointer"
+            >
+              Update Merchant Status
+            </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
@@ -198,6 +210,12 @@ function ActionCell({ merchant }: { merchant: Merchant }) {
         description="This will permanently delete the merchant and all associated data."
         itemName={merchant.businessName}
         isLoading={isPending}
+      />
+
+      <UpdateMerchantStatusDialog
+        isOpen={isUpdateDialogOpen}
+        onClose={() => setIsUpdateDialogOpen(false)}
+        merchant={merchant}
       />
     </>
   );

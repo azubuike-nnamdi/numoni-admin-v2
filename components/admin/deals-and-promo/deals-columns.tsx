@@ -4,6 +4,7 @@ import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-di
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useApproveDeal } from "@/hooks/mutation/useApproveDeal";
 import { useDeleteDeals } from "@/hooks/mutation/useDeleteDeals";
+import { useMakeDealInternal } from "@/hooks/mutation/useMakeDealInternal";
 import { useUpdateDeals } from "@/hooks/mutation/useUpdateDeals";
 import { useUpdateDealStatus } from "@/hooks/mutation/useUpdateDealStatus";
 import { formatCurrency, formatDateReadable, generateRandomBadgeColor, getApproveStatusColor, getApproveStatusText, getDealStatusColor, getDealStatusText } from "@/lib/helper";
@@ -17,6 +18,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ApproveDealDialog from "./approve-deal-dialog";
 import EditDealDialog from "./edit-deal-dialog";
+import MakeDealInternalDialog from "./make-deal-internal-dialog";
 import RejectDealDialog from "./reject-deal-dialog";
 import UpdateDealStatusDialog from "./update-deal-status-dialog";
 
@@ -213,10 +215,12 @@ function ActionCell({ deal }: { deal: DealData }) {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [isUpdateStatusDialogOpen, setIsUpdateStatusDialogOpen] = useState(false);
+  const [isMakeDealInternalDialogOpen, setIsMakeDealInternalDialogOpen] = useState(false);
   const { handleDeleteDeals, isPending, isSuccess } = useDeleteDeals();
   const { handleUpdateDeals, isPending: isUpdatePending, isSuccess: isUpdateSuccess } = useUpdateDeals();
   const { handleApproveDeal, isPending: isApprovePending, isSuccess: isApproveSuccess } = useApproveDeal();
   const { handleUpdateDealStatus, isPending: isUpdateStatusPending, isSuccess: isUpdateStatusSuccess } = useUpdateDealStatus();
+  const { handleMakeDealInternal, isPending: isMakeInternalPending, isSuccess: isMakeInternalSuccess } = useMakeDealInternal();
 
   const dealWithApproval = deal as DealDataWithApproval;
   const approveStatus = dealWithApproval.approveStatus ?? null;
@@ -283,6 +287,17 @@ function ActionCell({ deal }: { deal: DealData }) {
     });
   };
 
+  const handleMakeDealInternalClick = () => {
+    setIsMakeDealInternalDialogOpen(true);
+  };
+
+  const handleMakeDealInternalConfirm = (isInternal: boolean) => {
+    handleMakeDealInternal({
+      dealId: deal.id,
+      isInternal: isInternal,
+    });
+  };
+
   useEffect(() => {
     if (isSuccess) {
       setIsDeleteDialogOpen(false);
@@ -307,6 +322,12 @@ function ActionCell({ deal }: { deal: DealData }) {
       setIsUpdateStatusDialogOpen(false);
     }
   }, [isUpdateStatusSuccess]);
+
+  useEffect(() => {
+    if (isMakeInternalSuccess) {
+      setIsMakeDealInternalDialogOpen(false);
+    }
+  }, [isMakeInternalSuccess]);
 
   return (
     <>
@@ -366,6 +387,12 @@ function ActionCell({ deal }: { deal: DealData }) {
             >
               Delete Deal
             </DropdownMenuItem> */}
+            <DropdownMenuItem
+              onClick={handleMakeDealInternalClick}
+              className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              Make Deal Internal
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -412,6 +439,14 @@ function ActionCell({ deal }: { deal: DealData }) {
         currentStatus={deal.dealStatus}
         approveStatus={approveStatus}
         isLoading={isUpdateStatusPending}
+      />
+
+      <MakeDealInternalDialog
+        isOpen={isMakeDealInternalDialogOpen}
+        onClose={() => setIsMakeDealInternalDialogOpen(false)}
+        onConfirm={handleMakeDealInternalConfirm}
+        dealName={deal.name}
+        isLoading={isMakeInternalPending}
       />
     </>
   );

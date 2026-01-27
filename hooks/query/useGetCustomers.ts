@@ -5,7 +5,12 @@ interface GetCustomersParams {
   page?: number;
   size?: number;
   name?: string;
+  customerEmail?: string;
+  customerPhoneNo?: string;
+  customerId?: string;
   createdDate?: string;
+  startDate?: string;
+  endDate?: string;
   sort?: string[];
 }
 
@@ -14,12 +19,17 @@ const useGetCustomers = (params: GetCustomersParams = {}) => {
     page = 0,
     size = 20,
     name,
+    customerEmail,
+    customerPhoneNo,
+    customerId,
     createdDate,
+    startDate,
+    endDate,
     sort = [],
   } = params;
 
   const { data, isPending, error, isError, refetch } = useQuery({
-    queryKey: ["customers", page, size, name, createdDate, sort],
+    queryKey: ["customers", page, size, name, customerEmail, customerPhoneNo, customerId, createdDate, startDate, endDate, sort],
     queryFn: () => {
       const queryParams = new URLSearchParams();
 
@@ -29,7 +39,12 @@ const useGetCustomers = (params: GetCustomersParams = {}) => {
 
       // Optional filters
       if (name) queryParams.append("name", name);
+      if (customerEmail) queryParams.append("customerEmail", customerEmail);
+      if (customerPhoneNo) queryParams.append("customerPhoneNo", customerPhoneNo);
+      if (customerId) queryParams.append("customerId", customerId);
       if (createdDate) queryParams.append("createdDate", createdDate);
+      if (startDate) queryParams.append("startDate", startDate);
+      if (endDate) queryParams.append("endDate", endDate);
 
       // Optional sort parameters (e.g., field,asc)
       for (const s of sort) {

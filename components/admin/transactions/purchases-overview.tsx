@@ -3,7 +3,7 @@ import { MetricCard } from "@/components/common/metric-card";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetPurchaseOverview from "@/hooks/query/useGetPurchaseOverview";
-import { formatValue } from "@/lib/helper";
+import { extractErrorMessage, formatValue } from "@/lib/helper";
 import { Banknote, CheckCircle, Clock, Gift, ShoppingCart, StoreIcon, TrendingUp } from "lucide-react";
 import { PurchasesTable } from "./purchases-table";
 
@@ -30,7 +30,7 @@ export function PurchaseOverview() {
     },
     {
       title: 'Number of Purchase',
-      value: formatValue(purchaseOverview?.numberofPurchase, true) ?? 0,
+      value: purchaseOverview?.numberofPurchase ?? 0,
       icon: <ShoppingCart className="h-6 w-6 text-gray-200" />,
       bgColor: 'bg-[#E3EAFD]',
       iconBgColor: 'bg-black'
@@ -57,8 +57,8 @@ export function PurchaseOverview() {
       iconBgColor: 'bg-black'
     },
     {
-      title: 'Settled',
-      value: formatValue(purchaseOverview?.Settled, true) ?? 0,
+      title: 'Number of Settled',
+      value: purchaseOverview?.Settled ?? 0,
       icon: <CheckCircle className="h-6 w-6 text-gray-200" />,
       bgColor: 'bg-[#E3EAFD]',
     }
@@ -74,7 +74,7 @@ export function PurchaseOverview() {
       {isError ? (
         <ErrorState
           title="Error Loading Purchase Overview"
-          message={error?.message || "Failed to load purchase overview. Please try again."}
+          message={extractErrorMessage(error) || "Failed to load purchase overview. Please try again."}
           onRetry={refetch}
           retryText="Retry"
         />

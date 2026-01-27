@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetMerchantRewardPointById from "@/hooks/query/useGetMerchantRewardPointById";
+import { extractErrorMessage } from "@/lib/helper";
 import { Edit, Store } from "lucide-react";
 import MerchantRuleCard from "./merchant-rule-card";
 import MerchantRuleTable from "./merchant-rule-table";
@@ -51,7 +52,7 @@ export default function MerchantRewardPoints({ merchantId, userId }: { merchantI
           {isRewardPointError ? (
             <ErrorState
               title="Error Loading Reward Points"
-              message={rewardPointError?.message || "Failed to load reward points. Please try again."}
+              message={extractErrorMessage(rewardPointError) || "Failed to load reward points. Please try again."}
               onRetry={refetch}
               retryText="Retry"
             />

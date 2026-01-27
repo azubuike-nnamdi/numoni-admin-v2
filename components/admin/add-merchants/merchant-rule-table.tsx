@@ -6,6 +6,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import useGetMerchantRewardById from "@/hooks/query/useGetMerchantRewardById";
+import { extractErrorMessage } from "@/lib/helper";
 import { MerchantRewardRule, RewardData, RewardRuleApiItem, RewardRuleApiResponse } from "@/lib/types";
 import { useMemo } from "react";
 
@@ -40,7 +41,7 @@ export default function MerchantRuleTable({ userId }: { userId: string | null })
     return (
       <ErrorState
         title="Error Loading Reward Rules"
-        message={rewardError?.message || "Failed to load reward rules. Please try again."}
+        message={extractErrorMessage(rewardError) || "Failed to load reward rules. Please try again."}
         onRetry={refetch}
         retryText="Retry"
       />

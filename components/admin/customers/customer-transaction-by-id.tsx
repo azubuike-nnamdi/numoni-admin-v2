@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import useGetTransactionListByCustomerId from "@/hooks/query/useGetTransactionListByCustomerId";
-import { formatDateReadable, getTransactionTypeColor } from "@/lib/helper";
+import { extractErrorMessage, formatDateReadable, getTransactionTypeColor } from "@/lib/helper";
 import { ColumnDef } from "@tanstack/react-table";
 
 type Transaction = {
@@ -48,7 +48,7 @@ const transactionColumns: ColumnDef<Transaction>[] = [
       const transactionId = row.getValue("transactionId") as string;
       return (
         <div className="text-gray-600 text-sm font-mono">
-          {transactionId.length > 12 ? `${transactionId.slice(0, 8)}...` : transactionId}
+          {transactionId?.length > 12 ? `${transactionId.slice(0, 8)}...` : transactionId}
         </div>
       );
     },
@@ -60,7 +60,19 @@ const transactionColumns: ColumnDef<Transaction>[] = [
       const transactionNo = row.getValue("transactionNo") as string;
       return (
         <div className="text-gray-600 text-sm font-mono">
-          {transactionNo.length > 20 ? `${transactionNo.slice(0, 20)}...` : transactionNo}
+          {transactionNo?.length > 20 ? `${transactionNo?.slice(0, 20)}...` : transactionNo}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "customerId",
+    header: "Customer ID",
+    cell: ({ row }) => {
+      const customerId = row.getValue("customerId") as string;
+      return (
+        <div className="text-gray-600 text-sm">
+          {customerId}
         </div>
       );
     },
@@ -87,7 +99,7 @@ const transactionColumns: ColumnDef<Transaction>[] = [
       const amount = row.getValue("amount") as number;
       return (
         <div className="text-gray-900 text-sm font-medium">
-          ₦{amount.toLocaleString()}
+          ₦{amount?.toLocaleString()}
         </div>
       );
     },
@@ -99,7 +111,7 @@ const transactionColumns: ColumnDef<Transaction>[] = [
       const balance = row.getValue("balance") as number;
       return (
         <div className="text-gray-600 text-sm">
-          ₦{balance.toLocaleString()}
+          ₦{balance?.toLocaleString()}
         </div>
       );
     },
@@ -152,7 +164,7 @@ export default function CustomerTransactionById({ customerId }: { customerId: st
     return <LoadingSpinner message="Loading transaction list..." />;
   }
   if (isError) {
-    return <ErrorState title="Error Loading Transaction List" message={error?.message || "Failed to load transaction list. Please try again."} onRetry={refetch} retryText="Retry" />;
+    return <ErrorState title="Error Loading Transaction List" message={extractErrorMessage(error) || "Failed to load transaction list. Please try again."} onRetry={refetch} retryText="Retry" />;
   }
 
   const transactions = data?.data?.data || [];

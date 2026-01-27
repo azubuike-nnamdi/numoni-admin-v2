@@ -4,7 +4,7 @@ import { MetricCard } from "@/components/common/metric-card";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetSettlementOverview from "@/hooks/query/useGetSettlementOverview";
-import { formatValue } from "@/lib/helper";
+import { extractErrorMessage, formatValue } from "@/lib/helper";
 import { Banknote, CircleX, Clock, TrendingUp } from "lucide-react";
 
 export function PayoutCard() {
@@ -69,7 +69,7 @@ export function PayoutCard() {
       <main>
         <ErrorState
           title="Error Loading Settlement Overview"
-          message={error?.message || "Failed to load settlement overview. Please try again."}
+          message={extractErrorMessage(error) || "Failed to load settlement overview. Please try again."}
           onRetry={refetch}
           retryText="Retry"
         />
